@@ -23,7 +23,6 @@ for file in "${a}"/*.asm; do
 done
 
 # Link all object files into an executable
-echo "${output}"
 ld -g -o "${output}" *.o
 
 # Clean up object files
