@@ -1,3 +1,6 @@
 *.lst
 *.o
 *.out
+
+# Contains example files from professor
+/examples
