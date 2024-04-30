@@ -1,0 +1,18 @@
+Algorithm for 1-digit calculator 4-30-24:
+
+1. Read string input from user containing all operations
+2. Store string to use for printing it back
+3. Create a variable for storing result of calculator
+4. Store three characters at a time in register(s) to process results
+5. For each character in string:
+    - If len(collectedCharacters) == 3:
+        - Process calculations
+        - Store result in variable
+        - Remove contents of collectedCharacters
+        - continue;
+    - If character == number, store int(character) in a register or array
+    - If character in ["+", "-", "*", "/"]:
+        - Store character in register or array
+    - Repeat iteration
+6. Print result
+7. End program    
