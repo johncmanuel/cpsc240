@@ -16,3 +16,25 @@ Algorithm for 1-digit calculator 4-30-24:
     - Repeat iteration
 6. Print result
 7. End program    
+
+From the assembly file
+; Notes for myself:
+; Need to design a 1-digit integer calculator that supports
+; the basic arithmetic operations.
+; Example input: 3+5*3/5-4
+; 
+; Since input is a string, will need to loop through each character and check
+; if its numerical or an operation
+
+Something to keep in mind when reading expression string:
+there is an interesting pattern between indices and type of character it
+is (i.e digits or arithmetic operators)
+
+
+ex. string = 5 + 7 - 2 * 3 / 5
+
+idx:  0 1 2 3 4 5 6 7 8
+char: 5 + 7 - 2 * 3 / 5
+
+odd num indices = digits
+even num indices = operators
