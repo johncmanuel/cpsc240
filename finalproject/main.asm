@@ -29,6 +29,8 @@ section .data
 section .bss
     buffer resb 100
     result resd 1
+    num1 resd 1
+    num2 resd 1
 
 section .text
     global _start
@@ -41,37 +43,44 @@ _start:
 checkChar:
     ; check if index of current char is odd. 
     ; if so, check operators and perform operations
-    ; this already assumes there are two numbers available
+    ; this  assumes there are two numbers available
+    mov rdx, 0
     mov rax, rsi
     mov rbx, 2
     div rbx
     cmp rdx, 0
-    je checkAdd
+    jne checkAdd
+    mov rbx, 0
 
-    mov ah, byte[buffer+rsi]
-
-    ; get the current and next even-indexed num
+    ; get the current and next even-indexed nums
     ; if next even-index num is out of range or
     ; beyond length of current input, jump to end of
     ; program
     mov rcx, rsi
     add rcx, 2
     cmp rcx, lenInput
-    ja print_data
+    ja printData
     
-    mov al, byte[buffer+rcx]
+    ; todo: convert digit into integer
+    mov bl, byte[buffer+rsi]
+    call toInteger
+    mov dword[num1], edi
+    
+    mov bl, byte[buffer+rcx]
+    call toInteger
+    mov dword[num2], edi
+
     jmp prepareNextIteration
     
 checkAdd:
-    cmp ah, "+"
+    cmp byte[buffer+rsi], "+"
     jne checkSub
 
-    ; todo: add nums
-    mov rax, 0
-    
+    mov ecx, dword[num1]
+    mov edx, dword[num2]
+    add ecx, edx
+    add dword[result], ecx
 
-    ; after calculations, jump to prepareNextIteration
-    ; and store result there
     jmp prepareNextIteration
 
 checkSub:
@@ -89,9 +98,10 @@ checkDiv:
 
 prepareNextIteration:
     inc rsi
-    ; cmp rsi, 
+    cmp rsi, lenInput
+    jb checkChar
 
-print_data:
+printData:
     print buffer, 100
 
 end:
@@ -99,5 +109,12 @@ end:
     mov rdi, 0
     syscall
 
-to_integer:
-    mov 
+; converts ascii to integer and stores
+; in edi
+toInteger:
+convert:
+    mov dil, bl
+    and dil, 0fh
+    ; adc ah, 0
+    movzx edi, dil
+    ret    
