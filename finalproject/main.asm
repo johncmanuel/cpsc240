@@ -22,7 +22,7 @@ section .data
     NULL equ 0
     LF equ 10
     lenMsg1 equ 25
-    lenInput equ 100
+    lenInput equ 10
 
     msg1 db "Enter operations string: ", NULL
 
@@ -35,43 +35,40 @@ section .text
 
 _start:
     print msg1, lenMsg1
-    scan buffer, 100
+    scan buffer, 10
     mov rsi, 0
-
-beginLoop:
-    jmp checkChar 
 
 checkChar:
     ; check if index of current char is odd. 
-    ; if so, check operators
+    ; if so, check operators and perform operations
+    ; this already assumes there are two numbers available
     mov rax, rsi
     mov rbx, 2
     div rbx
     cmp rdx, 0
     je checkAdd
 
-    ; checks if current char is num 
-    mov al, byte[buffer+rsi]
-    cmp al, "0"
-    jb prepareNextIteration
-    cmp al, "9"
-    ja prepareNextIteration
+    mov ah, byte[buffer+rsi]
 
+    ; get the current and next even-indexed num
+    ; if next even-index num is out of range or
+    ; beyond length of current input, jump to end of
+    ; program
     mov rcx, rsi
     add rcx, 2
+    cmp rcx, lenInput
+    ja print_data
     
-    ; checks next digit
-    mov ah, byte[buffer+rcx]
-    cmp ah, "0"
-    jb prepareNextIteration
-    cmp ah, "9"
-    ja prepareNextIteration
-
+    mov al, byte[buffer+rcx]
+    jmp prepareNextIteration
+    
 checkAdd:
-    cmp al, "+"
+    cmp ah, "+"
     jne checkSub
 
     ; todo: add nums
+    mov rax, 0
+    
 
     ; after calculations, jump to prepareNextIteration
     ; and store result there
@@ -101,9 +98,6 @@ end:
     mov rax, 60
     mov rdi, 0
     syscall
-
-addition:
-    ret
 
 to_integer:
     mov 
