@@ -23,14 +23,15 @@ section .data
     LF equ 10
     lenMsg1 equ 25
     lenInput equ 10
+    result dw 0
 
     msg1 db "Enter operations string: ", NULL
 
 section .bss
     buffer resb 100
-    result resd 1
-    num1 resd 1
-    num2 resd 1
+    ; todo: rather than using curr and next,
+    ; just use result and a register to hold current value
+    ; curr resd 1
 
 section .text
     global _start
@@ -38,12 +39,27 @@ section .text
 _start:
     print msg1, lenMsg1
     scan buffer, 10
+
+    ; store 1st elem (expected to be a number)
+    ; in result 
     mov rsi, 0
+    mov bl, byte[buffer+rsi]
+    call toInteger
+    mov dword[result], edi
+
+    ; start at 2nd element of buffer arr,
+    ; which should be an operator
+    inc rsi
+
+    ; get next elem after operator, which will be
+    ; a num
+    mov bl, byte[buffer+(rsi+1)]
+    call toInteger
+    mov r8d, edi
 
 checkChar:
     ; check if index of current char is odd. 
     ; if so, check operators and perform operations
-    ; this  assumes there are two numbers available
     mov rdx, 0
     mov rax, rsi
     mov rbx, 2
@@ -52,44 +68,41 @@ checkChar:
     jne checkAdd
     mov rbx, 0
 
-    ; get the current and next even-indexed nums
-    ; if next even-index num is out of range or
-    ; beyond length of current input, jump to end of
-    ; program
-    mov rcx, rsi
-    add rcx, 2
-    cmp rcx, lenInput
-    ja printData
-    
-    ; todo: convert digit into integer
-    mov bl, byte[buffer+rsi]
+    ; if counter pointing to 
+    ; next elem after current elem is out of range,
+    ; end loop
+    mov rbx, rsi
+    add rbx, 1
+    cmp rbx, lenInput
+    jb printData
+
+    ; use r8d to store next number and continue to
+    ; next element (which should be an operator)
+    mov bl, byte[buffer+rbx]
     call toInteger
-    mov dword[num1], edi
-    
-    mov bl, byte[buffer+rcx]
-    call toInteger
-    mov dword[num2], edi
+    mov r8d, edi
 
     jmp prepareNextIteration
     
 checkAdd:
     cmp byte[buffer+rsi], "+"
     jne checkSub
-
-    mov ecx, dword[num1]
-    mov edx, dword[num2]
-    add ecx, edx
-    add dword[result], ecx
-
+    add dword[result], r8d
     jmp prepareNextIteration
 
 checkSub:
     cmp byte[buffer+rsi], "-"
     jne checkMul
+    sub dword[result], r8d    
     jmp prepareNextIteration
 
 checkMul:
     cmp byte[buffer+rsi], "*"
+    mov rbx, 0
+    mov eax, dword[result]
+    ; mul r8d
+    ; mov dword[]
+
     jne checkDiv
 
 checkDiv:
@@ -110,7 +123,7 @@ end:
     syscall
 
 ; converts ascii to integer and stores
-; in edi
+; in edi. bl represents the ascii value
 toInteger:
 convert:
     mov dil, bl
