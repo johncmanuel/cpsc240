@@ -33,6 +33,7 @@ section .data
 section .bss
     buffer resb 100
     ascii resb 10
+    ; n resd 1
 
 section .text
     global _start
@@ -166,6 +167,17 @@ popLoop:
     mov byte[rbx+rdi], al
     inc rdi
     loop popLoop
-    
     ; mov byte[rbx+rdi], LF
     ret  
+
+; r9b = buffer
+; returns rcx
+; getStrLen:
+;     mov rcx, 0
+; lenLoop:
+;     cmp r9b, 0
+;     je endLenLoop
+;     inc rcx
+;     jmp lenLoop
+; endLenLoop:
+;     ret
