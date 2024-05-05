@@ -67,15 +67,14 @@ checkChar:
     div rbx
     cmp rdx, 0
     jne checkAdd
-    mov rbx, 0
 
     ; if counter pointing to 
-    ; next elem after current elem is out of range,
+    ; next number after current elem is out of range,
     ; end loop
     mov rbx, rsi
-    add rbx, 1
+    add rbx, 2
     cmp rbx, lenInput
-    jb printData
+    ja printData
 
     ; use r8d to store next number and continue to
     ; next element (which should be an operator)
@@ -121,10 +120,11 @@ prepareNextIteration:
     jb checkChar
 
 printData:
+    ; TODO: fix printing issue 
     mov edi, dword[result]
     call toString
 
-    print buffer, 50
+    print buffer, 15
     print msg2, lenMsg2
     print ascii, 10
 
@@ -167,5 +167,5 @@ popLoop:
     inc rdi
     loop popLoop
     
-    mov byte[rbx+rdi], LF
+    ; mov byte[rbx+rdi], LF
     ret  
