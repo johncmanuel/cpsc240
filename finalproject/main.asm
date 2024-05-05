@@ -21,17 +21,18 @@
 section .data
     NULL equ 0
     LF equ 10
+
     lenMsg1 equ 25
     lenInput equ 10
-    result dw 0
+    lenMsg2 equ 3
 
+    result dw 0
     msg1 db "Enter operations string: ", NULL
+    msg2 db " = ", NULL
 
 section .bss
     buffer resb 100
-    ; todo: rather than using curr and next,
-    ; just use result and a register to hold current value
-    ; curr resd 1
+    ascii resb 10
 
 section .text
     global _start
@@ -98,16 +99,21 @@ checkSub:
 
 checkMul:
     cmp byte[buffer+rsi], "*"
-    mov rbx, 0
-    mov eax, dword[result]
-    ; mul r8d
-    ; mov dword[]
-
     jne checkDiv
+    mov eax, dword[result]
+    mul r8d
+    ; could lead to a bug
+    mov dword[result], eax
+    jmp prepareNextIteration
 
 checkDiv:
     cmp byte[buffer+rsi], "/"
     jne prepareNextIteration
+
+    mov eax, dword[result]
+    mov edx, 0
+    div r8d
+    mov dword[result], eax
 
 prepareNextIteration:
     inc rsi
@@ -115,7 +121,12 @@ prepareNextIteration:
     jb checkChar
 
 printData:
-    print buffer, 100
+    mov edi, dword[result]
+    call toString
+
+    print buffer, 50
+    print msg2, lenMsg2
+    print ascii, 10
 
 end:
     mov rax, 60
@@ -131,3 +142,30 @@ convert:
     ; adc ah, 0
     movzx edi, dil
     ret    
+
+; converts integer to ascii
+; and stores pop 
+toString:
+    mov eax, dword[result]
+    mov rcx, 0
+    mov ebx, 10
+pushLoop:
+    mov edx, 0
+    div ebx
+    push rdx
+    inc rcx
+    
+    cmp eax, 0
+    jne pushLoop
+
+    mov rbx, ascii
+    mov rdi, 0
+popLoop:
+    pop rax
+    add al, "0"
+    mov byte[rbx+rdi], al
+    inc rdi
+    loop popLoop
+    
+    mov byte[rbx+rdi], LF
+    ret  
