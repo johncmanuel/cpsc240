@@ -31,16 +31,15 @@ section .data
     msg2 db " = ", NULL
 
 section .bss
-    buffer resb 100
+    buffer resb 10
     ascii resb 10
-    ; n resd 1
 
 section .text
     global _start
 
 _start:
     print msg1, lenMsg1
-    scan buffer, 10
+    scan buffer, lenInput
 
     ; store 1st elem (expected to be a number)
     ; in result 
@@ -83,47 +82,52 @@ checkChar:
     mov r8d, edi
 
     jmp prepareNextIteration
-    
+
+; Perform addition operation if current character is "+" 
 checkAdd:
     cmp byte[buffer+rsi], "+"
     jne checkSub
     add dword[result], r8d
     jmp prepareNextIteration
 
+; Perform subtraction operation if current character is "-"
 checkSub:
     cmp byte[buffer+rsi], "-"
     jne checkMul
     sub dword[result], r8d    
     jmp prepareNextIteration
 
+; Perform multiplication operation if current character is "*" 
 checkMul:
     cmp byte[buffer+rsi], "*"
     jne checkDiv
     mov eax, dword[result]
     mul r8d
-    ; could lead to a bug
     mov dword[result], eax
     jmp prepareNextIteration
 
+; Perform division operation if current character is "/" 
 checkDiv:
     cmp byte[buffer+rsi], "/"
     jne prepareNextIteration
-
     mov eax, dword[result]
     mov edx, 0
     div r8d
     mov dword[result], eax
 
+; Perform the next iteration of the loop
 prepareNextIteration:
     inc rsi
     cmp rsi, lenInput
     jb checkChar
 
+; Print the data to the console
 printData:
+    mov rbx, 0
     mov edi, dword[result]
     call toString
 
-    print buffer, 15
+    print buffer, lenInput
     print msg2, lenMsg2
     print ascii, 10
 
@@ -138,7 +142,6 @@ toInteger:
 convert:
     mov dil, bl
     and dil, 0fh
-    ; adc ah, 0
     movzx edi, dil
     ret    
 
@@ -167,15 +170,3 @@ popLoop:
     loop popLoop
     mov byte[rbx+rdi], LF
     ret  
-
-; r9b = buffer
-; returns rcx
-; getStrLen:
-;     mov rcx, 0
-; lenLoop:
-;     cmp r9b, 0
-;     je endLenLoop
-;     inc rcx
-;     jmp lenLoop
-; endLenLoop:
-;     ret
