@@ -69,9 +69,8 @@ checkChar:
     cmp rdx, 0
     jne checkAdd
 
-    ; if counter pointing to 
-    ; next number after current elem is out of range,
-    ; end loop
+    ; if counter pointing to the next number after the 
+    ; current elem is out of range, end loop
     mov rbx, rsi
     add rbx, 2
     cmp rbx, lenInput
@@ -121,7 +120,6 @@ prepareNextIteration:
     jb checkChar
 
 printData:
-    ; TODO: fix printing issue 
     mov edi, dword[result]
     call toString
 
@@ -167,7 +165,7 @@ popLoop:
     mov byte[rbx+rdi], al
     inc rdi
     loop popLoop
-    ; mov byte[rbx+rdi], LF
+    mov byte[rbx+rdi], LF
     ret  
 
 ; r9b = buffer
