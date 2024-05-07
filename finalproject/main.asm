@@ -1,4 +1,7 @@
-; finalproject.asm
+; main.asm
+; Final project for CPSC 240
+; John Carlo Manuel
+; 5-10-24
 
 ; print(string, numChar)
 %macro print 2
