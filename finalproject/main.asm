@@ -26,7 +26,7 @@ section .data
     LF equ 10
 
     lenMsg1 equ 25
-    lenInput equ 10
+    lenInput equ 19
     lenMsg2 equ 3
 
     result dw 0
@@ -34,7 +34,7 @@ section .data
     msg2 db " = ", NULL
 
 section .bss
-    buffer resb 10
+    buffer resb lenInput
     ascii resb 10
 
 section .text
